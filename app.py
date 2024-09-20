@@ -6,50 +6,45 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 # Load the dataset
-data_path = 'Emotion_final_with_predictions.csv'  # Use relative path for deployment
+data_path = 'Emotion_final_with_predictions.csv'  # Ensure this path is correct for deployment
 data = pd.read_csv(data_path)
 
-# Assuming the dataset has 'Text' and 'Emotion' columns
+# Prepare data
 X = data['Text']
 y = data['Emotion']
 
-# Split the dataset into training and testing sets
+# Split the dataset
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Vectorize the text data
+# Vectorize text data
 vectorizer = TfidfVectorizer()
 X_train_vec = vectorizer.fit_transform(X_train)
 X_test_vec = vectorizer.transform(X_test)
 
-# Initialize the Logistic Regression model
+# Train Logistic Regression model
 logistic_regression_model = LogisticRegression(max_iter=1000)
-
-# Train the model
 logistic_regression_model.fit(X_train_vec, y_train)
 
 # Make predictions
 y_pred = logistic_regression_model.predict(X_test_vec)
 
-# Evaluate the model
+# Evaluate model
 accuracy = accuracy_score(y_test, y_pred)
 print(f'Logistic Regression Accuracy: {accuracy:.4f}')
 print('Classification Report:')
 print(classification_report(y_test, y_pred))
 
-# Function to predict emotion from text using Logistic Regression
+# Prediction function
 def predict_emotion_logistic(text):
     text_vec = vectorizer.transform([text])
-    prediction = logistic_regression_model.predict(text_vec)
-    return prediction[0]
+    return logistic_regression_model.predict(text_vec)[0]
 
 # Streamlit app
 st.title('Emotion Prediction using Logistic Regression')
-
-# Display the dataset
 st.subheader('Dataset')
 st.write(data.head())
 
-# Input text for emotion prediction
+# Input for prediction
 st.subheader('Predict Emotion from Text')
 input_text = st.text_input('Enter text:')
 
